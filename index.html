@@ -5,56 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Reflectie Tool</title>
     <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 10px; line-height: 1.6; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 20px; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 8px; }
-        textarea { width: 100%; height: 100px; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { background-color: #ff0000; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 10px; font-weight: bold; }
-        button:hover { background-color: #cc0000; }
-        #reactie-lijst { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
-        .reactie { background: #f9f9f9; padding: 15px; border-left: 5px solid #ff0000; margin-bottom: 10px; border-radius: 3px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f4f4f9; }
+        .instellingen { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 20px; background: #000; border-radius: 8px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        textarea { width: 100%; height: 100px; padding: 12px; margin-top: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        input[type="text"] { width: 70%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        button.video-btn { background-color: #007bff; }
+        button:hover { opacity: 0.8; }
+        .reactie { background: white; padding: 15px; border-left: 5px solid #28a745; margin-top: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2, h3 { color: #333; }
     </style>
 </head>
 <body>
 
-    <h2>Bekijk de video en geef je mening</h2>
+    <div class="instellingen">
+        <strong>Stap 1: Plak YouTube URL</strong><br>
+        <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=...">
+        <button class="video-btn" onclick="laadVideo()">Laad Video</button>
+    </div>
 
     <div class="video-container">
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+        <iframe id="youtube-player" src="" allowfullscreen></iframe>
     </div>
 
     <div id="input-sectie">
-        <label for="student-tekst"><strong>Jouw tekst/reflectie:</strong></label>
-        <textarea id="student-tekst" placeholder="Typ hier je tekst..."></textarea>
+        <h3>Stap 2: Schrijf je tekst</h3>
+        <textarea id="student-tekst" placeholder="Wat vind je van deze video?"></textarea>
         <button onclick="voegReactieToe()">Inleveren</button>
     </div>
 
     <div id="reactie-lijst">
         <h3>Ingezonden reacties:</h3>
-        <div id="berichten-box">
-            </div>
+        <div id="berichten-box"></div>
     </div>
 
     <script>
+        // Functie om de YouTube URL om te zetten naar een werkende embed link
+        function laadVideo() {
+            const urlInvoer = document.getElementById('video-url').value;
+            const iframe = document.getElementById('youtube-player');
+            let videoId = "";
+
+            if (urlInvoer.includes("v=")) {
+                videoId = urlInvoer.split("v=")[1].split("&")[0];
+            } else if (urlInvoer.includes("be/")) {
+                videoId = urlInvoer.split("be/")[1].split("?")[0];
+            }
+
+            if (videoId) {
+                iframe.src = "https://www.youtube.com/embed/" + videoId;
+            } else {
+                alert("Oeps! Dat lijkt geen geldige YouTube link. Gebruik een link zoals: https://www.youtube.com/watch?v=ID_CODE");
+            }
+        }
+
+        // Functie om de tekst van de student toe te voegen
         function voegReactieToe() {
             const tekstveld = document.getElementById('student-tekst');
             const berichtenBox = document.getElementById('berichten-box');
             
             if (tekstveld.value.trim() !== "") {
-                // Maak een nieuw element aan voor de tekst
                 const nieuweReactie = document.createElement('div');
                 nieuweReactie.className = 'reactie';
-                
-                // Voeg de tekst toe (beveiligd tegen HTML-injectie)
                 nieuweReactie.textContent = tekstveld.value;
-                
-                // Zet de nieuwe reactie bovenaan de lijst
                 berichtenBox.prepend(nieuweReactie);
-                
-                // Maak het tekstveld weer leeg
                 tekstveld.value = "";
-            } else {
-                alert("Typ eerst even iets voordat je op inleveren klikt!");
             }
         }
     </script>
