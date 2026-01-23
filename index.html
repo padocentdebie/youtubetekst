@@ -3,78 +3,725 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Reflectie Tool</title>
+    <title>Video Analyse Chatroom</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f4f4f9; }
-        .instellingen { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-bottom: 20px; background: #000; border-radius: 8px; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        textarea { width: 100%; height: 100px; padding: 12px; margin-top: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        input[type="text"] { width: 70%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
-        button { background-color: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; }
-        button.video-btn { background-color: #007bff; }
-        button:hover { opacity: 0.8; }
-        .reactie { background: white; padding: 15px; border-left: 5px solid #28a745; margin-top: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h2, h3 { color: #333; }
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            color: #2980b9;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            color: #16a085;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .url-input {
+            font-size: 18px;
+            padding: 15px;
+        }
+        
+        .word-counter {
+            text-align: right;
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        
+        .word-counter.warning {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .button.secondary {
+            background-color: #2ecc71;
+        }
+        
+        .button.secondary:hover {
+            background-color: #27ae60;
+        }
+        
+        .button.danger {
+            background-color: #e74c3c;
+        }
+        
+        .button.danger:hover {
+            background-color: #c0392b;
+        }
+        
+        #videoContainer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        iframe {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #analysesContainer, #feedbacksContainer {
+            margin-top: 20px;
+        }
+        
+        .analysis-item, .feedback-item {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .feedback-item {
+            border-left-color: #2ecc71;
+            margin-left: 20px;
+            background-color: #f1f8f4;
+        }
+        
+        .feedback-form {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .timestamp {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 10px;
+            text-align: right;
+        }
+        
+        .feedback-count {
+            display: inline-block;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f1c40f;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #f39c12;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .user-info {
+            background-color: #e8f4fc;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .online-count {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #e74c3c;
+        }
+        
+        .notification.info {
+            background-color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .feedback-item {
+                margin-left: 10px;
+            }
+            
+            .button {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <div class="instellingen">
-        <strong>Stap 1: Plak YouTube URL</strong><br>
-        <input type="text" id="video-url" placeholder="https://youtu.be/k0cqNu4GzeI?si=EdkyIO0nElNx8nkC">
-        <button class="video-btn" onclick="laadVideo()">Laad Video</button>
-    </div>
-
-    <div class="video-container">
-        <iframe id="youtube-player" src="" allowfullscreen></iframe>
-    </div>
-
-    <div id="input-sectie">
-        <h3>Stap 2: Schrijf je tekst</h3>
-        <textarea id="student-tekst" placeholder="Schrijf hier jouw tekst."></textarea>
-        <button onclick="voegReactieToe()">Inleveren</button>
-    </div>
-
-    <div id="reactie-lijst">
-        <h3>Ingezonden reacties:</h3>
-        <div id="berichten-box"></div>
-    </div>
-
-    <script>
-        // Functie om de YouTube URL om te zetten naar een werkende embed link
-        function laadVideo() {
-            const urlInvoer = document.getElementById('video-url').value;
-            const iframe = document.getElementById('youtube-player');
-            let videoId = "";
-
-            if (urlInvoer.includes("v=")) {
-                videoId = urlInvoer.split("v=")[1].split("&")[0];
-            } else if (urlInvoer.includes("be/")) {
-                videoId = urlInvoer.split("be/")[1].split("?")[0];
-            }
-
-            if (videoId) {
-                iframe.src = "https://www.youtube.com/embed/" + videoId;
-            } else {
-                alert("Oeps! Dat lijkt geen geldige YouTube link. Gebruik een link zoals: https://www.youtube.com/watch?v=ID_CODE");
-            }
-        }
-
-        // Functie om de tekst van de student toe te voegen
-        function voegReactieToe() {
-            const tekstveld = document.getElementById('student-tekst');
-            const berichtenBox = document.getElementById('berichten-box');
+    <div class="notification" id="notification"></div>
+    
+    <div class="container">
+        <h1>🎬 Video Analyse Chatroom</h1>
+        
+        <div class="user-info">
+            <span id="connectionStatus">Verbinden met server...</span>
+            <span class="online-count">Online: <span id="onlineCount">0</span></span>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Instructies voor gebruik</h3>
+            <ul>
+                <li><strong>Stap 1:</strong> Plak de URL van een YouTube video in het bovenste veld</li>
+                <li><strong>Stap 2:</strong> Schrijf een analyse/reflectie van minimaal 600 woorden</li>
+                <li><strong>Stap 3:</strong> Druk op "Analyse Toevoegen" om je tekst te delen</li>
+                <li><strong>Stap 4:</strong> Geef feedback op analyses van anderen (maximaal 100 woorden)</li>
+                <li><strong>Belangrijk:</strong> Alle analyses en feedback zijn REAL-TIME zichtbaar voor alle deelnemers!</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>1. YouTube Video Toevoegen</h2>
+            <label for="youtubeUrl">📺 Plak hier de URL van het YouTube-filmpje:</label>
+            <input type="text" id="youtubeUrl" class="url-input" placeholder="Bijv. https://www.youtube.com/watch?v=VIDEO_ID">
+            <button id="loadVideoBtn" class="button">Video Laden</button>
+            <button id="shareVideoBtn" class="button secondary">Video Delen met Alle Studenten</button>
             
-            if (tekstveld.value.trim() !== "") {
-                const nieuweReactie = document.createElement('div');
-                nieuweReactie.className = 'reactie';
-                nieuweReactie.textContent = tekstveld.value;
-                berichtenBox.prepend(nieuweReactie);
-                tekstveld.value = "";
+            <div id="videoContainer">
+                <!-- Hier komt de YouTube video -->
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>2. Analyse Schrijven (minimaal 600 woorden)</h2>
+            <label for="analysisText">✍️ Schrijf hier je analyse/reflectie:</label>
+            <textarea id="analysisText" rows="15" placeholder="Begin hier met het schrijven van je analyse... (minimaal 600 woorden)"></textarea>
+            <div id="wordCounter" class="word-counter">0 woorden</div>
+            <button id="submitAnalysisBtn" class="button" disabled>📤 Analyse Toevoegen</button>
+        </div>
+        
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin-bottom: 0;">3. Geplaatste Analyses</h2>
+                <button id="clearAllBtn" class="button danger">🗑️ Alles Wissen (einde les)</button>
+            </div>
+            <p>Hieronder zie je alle geplaatste analyses. Je kunt feedback geven op elke analyse.</p>
+            
+            <div id="analysesContainer">
+                <!-- Analyses worden hier dynamisch toegevoegd via socket.io -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.io client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+        // Socket.io verbinding
+        const socket = io();
+        
+        // Elementen selecteren
+        const youtubeUrlInput = document.getElementById('youtubeUrl');
+        const loadVideoBtn = document.getElementById('loadVideoBtn');
+        const shareVideoBtn = document.getElementById('shareVideoBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const analysisText = document.getElementById('analysisText');
+        const wordCounter = document.getElementById('wordCounter');
+        const submitAnalysisBtn = document.getElementById('submitAnalysisBtn');
+        const analysesContainer = document.getElementById('analysesContainer');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const onlineCount = document.getElementById('onlineCount');
+        const notification = document.getElementById('notification');
+        
+        // Data opslag
+        let currentVideoUrl = '';
+        let analyses = [];
+        let feedbacks = {};
+        
+        // Verbindingsstatus
+        socket.on('connect', () => {
+            connectionStatus.textContent = 'Verbonden met server';
+            connectionStatus.style.color = '#27ae60';
+            showNotification('Verbonden met de chatroom!', 'info');
+        });
+        
+        socket.on('disconnect', () => {
+            connectionStatus.textContent = 'Niet verbonden';
+            connectionStatus.style.color = '#e74c3c';
+            showNotification('Verbinding verbroken. Herverbinden...', 'error');
+        });
+        
+        // Ontvang initiële data bij verbinding
+        socket.on('init', (data) => {
+            currentVideoUrl = data.videoUrl;
+            analyses = data.analyses || [];
+            feedbacks = data.feedbacks || {};
+            
+            // Toon huidige video als die er is
+            if (currentVideoUrl) {
+                youtubeUrlInput.value = currentVideoUrl;
+                loadYouTubeVideo(currentVideoUrl, false);
+            }
+            
+            // Toon alle analyses
+            renderAllAnalyses();
+        });
+        
+        // Update online teller
+        socket.on('user-count', (count) => {
+            onlineCount.textContent = count;
+        });
+        
+        // Ontvang video updates
+        socket.on('video-updated', (url) => {
+            if (url !== currentVideoUrl) {
+                currentVideoUrl = url;
+                youtubeUrlInput.value = url;
+                loadYouTubeVideo(url, false);
+                showNotification('Docent heeft een nieuwe video gedeeld!', 'info');
+            }
+        });
+        
+        // Ontvang nieuwe analyses
+        socket.on('analysis-added', (analysis) => {
+            // Voeg toe aan lokale array
+            analyses.unshift(analysis);
+            
+            // Render de nieuwe analyse
+            renderAnalysis(analysis, true);
+            
+            // Toon melding
+            showNotification('Nieuwe analyse toegevoegd!', 'info');
+        });
+        
+        // Ontvang nieuwe feedback
+        socket.on('feedback-added', ({ analysisId, feedback }) => {
+            // Voeg feedback toe aan lokale opslag
+            if (!feedbacks[analysisId]) {
+                feedbacks[analysisId] = [];
+            }
+            feedbacks[analysisId].push(feedback);
+            
+            // Update de betreffende analyse
+            updateFeedbackDisplay(analysisId);
+            
+            // Toon melding
+            showNotification('Nieuwe feedback ontvangen!', 'info');
+        });
+        
+        // Reset alle data
+        socket.on('all-cleared', () => {
+            analyses = [];
+            feedbacks = {};
+            analysesContainer.innerHTML = '<p class="timestamp">Alle inhoud is gewist. Start een nieuwe discussie!</p>';
+            showNotification('Alle inhoud is gewist. Klaar voor nieuwe les!', 'info');
+        });
+        
+        // YouTube video laden functie (lokaal)
+        function loadYouTubeVideo(url, showEmbed = true) {
+            if (!url) {
+                videoContainer.innerHTML = '<p>Voer een YouTube URL in</p>';
+                return;
+            }
+            
+            // YouTube video ID extracten
+            let videoId = '';
+            
+            // Verschillende YouTube URL formaten ondersteunen
+            if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('v=')[1];
+                const ampersandPosition = videoId.indexOf('&');
+                if (ampersandPosition !== -1) {
+                    videoId = videoId.substring(0, ampersandPosition);
+                }
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1];
+                const ampersandPosition = videoId.indexOf('?');
+                if (ampersandPosition !== -1) {
+                    videoId = videoId.substring(0, ampersandPosition);
+                }
+            }
+            
+            if (!videoId) {
+                if (showEmbed) {
+                    videoContainer.innerHTML = '<p>Kon de YouTube video ID niet vinden. Controleer de URL.</p>';
+                }
+                return;
+            }
+            
+            if (showEmbed) {
+                // Video embedden
+                videoContainer.innerHTML = `
+                    <h3>Gedeelde Video:</h3>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                    <p><em>Video geladen. Je kunt nu je analyse schrijven.</em></p>
+                `;
             }
         }
+        
+        // YouTube video laden (lokaal)
+        loadVideoBtn.addEventListener('click', () => {
+            const url = youtubeUrlInput.value.trim();
+            loadYouTubeVideo(url);
+        });
+        
+        // Video delen met iedereen
+        shareVideoBtn.addEventListener('click', () => {
+            const url = youtubeUrlInput.value.trim();
+            
+            if (!url) {
+                alert('Voer een YouTube URL in om te delen');
+                return;
+            }
+            
+            // Stuur naar server
+            socket.emit('update-video', url);
+            currentVideoUrl = url;
+            loadYouTubeVideo(url);
+            
+            showNotification('Video gedeeld met alle studenten!', 'info');
+        });
+        
+        // Woorden tellen voor analyse
+        analysisText.addEventListener('input', updateWordCount);
+        
+        // Analyse toevoegen
+        submitAnalysisBtn.addEventListener('click', addAnalysis);
+        
+        // Alles wissen (einde les)
+        clearAllBtn.addEventListener('click', () => {
+            if (confirm('Weet je zeker dat je alle analyses en feedback wilt wissen? Dit kan niet ongedaan worden.')) {
+                socket.emit('clear-all');
+            }
+        });
+        
+        // Woorden tellen functie
+        function updateWordCount() {
+            const text = analysisText.value.trim();
+            const words = text === '' ? 0 : text.split(/\s+/).length;
+            
+            wordCounter.textContent = `${words} woorden`;
+            
+            // Waarschuwing tonen bij minder dan 600 woorden
+            if (words < 600) {
+                wordCounter.classList.add('warning');
+                wordCounter.textContent = `${words} woorden (minimaal 600 woorden vereist)`;
+                submitAnalysisBtn.disabled = true;
+            } else {
+                wordCounter.classList.remove('warning');
+                submitAnalysisBtn.disabled = false;
+            }
+        }
+        
+        // Analyse toevoegen functie
+        function addAnalysis() {
+            const analysisTextValue = analysisText.value.trim();
+            
+            if (analysisTextValue === '') {
+                alert('Voer een analyse in');
+                return;
+            }
+            
+            const words = analysisTextValue.split(/\s+/).length;
+            
+            if (words < 600) {
+                alert('Je analyse moet minimaal 600 woorden bevatten. Je hebt momenteel ' + words + ' woorden.');
+                return;
+            }
+            
+            // Maak analyse object
+            const analysis = {
+                text: analysisTextValue,
+                author: `Student_${Math.floor(Math.random() * 1000)}`, // In een echte app: inloggen
+                timestamp: new Date().toLocaleTimeString('nl-NL')
+            };
+            
+            // Stuur naar server
+            socket.emit('new-analysis', analysis);
+            
+            // Textarea leegmaken
+            analysisText.value = '';
+            updateWordCount();
+        }
+        
+        // Alle analyses renderen
+        function renderAllAnalyses() {
+            analysesContainer.innerHTML = '';
+            
+            if (analyses.length === 0) {
+                analysesContainer.innerHTML = '<p class="timestamp">Nog geen analyses. Wees de eerste!</p>';
+                return;
+            }
+            
+            analyses.forEach(analysis => {
+                renderAnalysis(analysis, false);
+            });
+        }
+        
+        // Enkele analyse renderen
+        function renderAnalysis(analysis, prepend = false) {
+            const analysisId = analysis.id;
+            
+            const analysisItem = document.createElement('div');
+            analysisItem.className = 'analysis-item';
+            analysisItem.id = `analysis_${analysisId}`;
+            
+            // Formatteer datum/tijd
+            const date = new Date(analysis.timestamp);
+            const formattedTime = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+            const formattedDate = date.toLocaleDateString('nl-NL');
+            
+            // Haal feedback op voor deze analyse
+            const analysisFeedbacks = feedbacks[analysisId] || [];
+            const feedbackCount = analysisFeedbacks.length;
+            
+            analysisItem.innerHTML = `
+                <h3>Analyse van ${analysis.author}</h3>
+                <p>${analysis.text.replace(/\n/g, '<br>')}</p>
+                <div class="timestamp">Geplaatst op: ${formattedDate} ${formattedTime}</div>
+                
+                <div class="feedback-form">
+                    <h4>💬 Feedback geven op deze analyse:</h4>
+                    <textarea class="feedback-text" rows="3" placeholder="Schrijf hier je feedback (maximaal 100 woorden)..."></textarea>
+                    <div class="word-counter feedback-counter">0 woorden</div>
+                    <button class="button submit-feedback-btn" data-analysis-id="${analysisId}">Feedback Toevoegen</button>
+                </div>
+                
+                <h4>Feedback op deze analyse (<span class="feedback-count">${feedbackCount}</span>):</h4>
+                <div class="feedbacks-list" id="feedbacks_${analysisId}">
+                    ${renderFeedbacks(analysisFeedbacks)}
+                </div>
+            `;
+            
+            if (prepend) {
+                analysesContainer.prepend(analysisItem);
+            } else {
+                analysesContainer.appendChild(analysisItem);
+            }
+            
+            // Event listeners toevoegen voor feedback
+            const feedbackTextarea = analysisItem.querySelector('.feedback-text');
+            const feedbackCounter = analysisItem.querySelector('.feedback-counter');
+            const submitFeedbackBtn = analysisItem.querySelector('.submit-feedback-btn');
+            
+            feedbackTextarea.addEventListener('input', function() {
+                updateFeedbackWordCount(this);
+            });
+            
+            submitFeedbackBtn.addEventListener('click', function() {
+                const analysisId = this.getAttribute('data-analysis-id');
+                addFeedback(analysisId);
+            });
+        }
+        
+        // Feedback renderen
+        function renderFeedbacks(feedbacks) {
+            if (!feedbacks || feedbacks.length === 0) {
+                return '<p class="timestamp">Nog geen feedback op deze analyse.</p>';
+            }
+            
+            return feedbacks.map(feedback => {
+                const date = new Date(feedback.timestamp);
+                const formattedTime = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+                
+                return `
+                    <div class="feedback-item">
+                        <p>${feedback.text.replace(/\n/g, '<br>')}</p>
+                        <div class="timestamp">Geplaatst door ${feedback.author} om ${formattedTime}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Feedback display updaten
+        function updateFeedbackDisplay(analysisId) {
+            const analysisFeedbacks = feedbacks[analysisId] || [];
+            const feedbacksList = document.getElementById(`feedbacks_${analysisId}`);
+            const feedbackCountElement = document.querySelector(`#analysis_${analysisId} .feedback-count`);
+            
+            if (feedbacksList) {
+                feedbacksList.innerHTML = renderFeedbacks(analysisFeedbacks);
+            }
+            
+            if (feedbackCountElement) {
+                feedbackCountElement.textContent = analysisFeedbacks.length;
+            }
+        }
+        
+        // Feedback toevoegen
+        function addFeedback(analysisId) {
+            const analysisElement = document.getElementById(`analysis_${analysisId}`);
+            if (!analysisElement) return;
+            
+            const feedbackTextarea = analysisElement.querySelector('.feedback-text');
+            const feedbackText = feedbackTextarea.value.trim();
+            
+            if (feedbackText === '') {
+                alert('Voer feedback in');
+                return;
+            }
+            
+            const words = feedbackText.split(/\s+/).length;
+            
+            if (words > 100) {
+                alert('Feedback mag maximaal 100 woorden bevatten. Je hebt momenteel ' + words + ' woorden.');
+                return;
+            }
+            
+            // Maak feedback object
+            const feedback = {
+                text: feedbackText,
+                author: `Student_${Math.floor(Math.random() * 1000)}`, // In een echte app: inloggen
+                timestamp: new Date().toISOString()
+            };
+            
+            // Stuur naar server
+            socket.emit('new-feedback', { analysisId, feedback });
+            
+            // Textarea leegmaken
+            feedbackTextarea.value = '';
+            const feedbackCounter = analysisElement.querySelector('.feedback-counter');
+            feedbackCounter.textContent = '0 woorden';
+            feedbackCounter.classList.remove('warning');
+        }
+        
+        // Feedback woorden tellen
+        function updateFeedbackWordCount(textarea) {
+            const text = textarea.value.trim();
+            const words = text === '' ? 0 : text.split(/\s+/).length;
+            const feedbackCounter = textarea.parentElement.querySelector('.feedback-counter');
+            
+            feedbackCounter.textContent = `${words} woorden`;
+            
+            if (words > 100) {
+                feedbackCounter.classList.add('warning');
+                feedbackCounter.textContent = `${words} woorden (maximaal 100 woorden)`;
+                textarea.parentElement.querySelector('.submit-feedback-btn').disabled = true;
+            } else {
+                feedbackCounter.classList.remove('warning');
+                textarea.parentElement.querySelector('.submit-feedback-btn').disabled = false;
+            }
+        }
+        
+        // Notificatie tonen
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Initialisatie
+        updateWordCount();
     </script>
-
 </body>
 </html>
