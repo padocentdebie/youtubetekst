@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Analyse Chatroom</title>
+    <title>PV Aangifte Training Systeem</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,7 +11,7 @@
         }
         
         body {
-            background-color: #f5f7fa;
+            background-color: #f0f2f5;
             color: #333;
             margin: 0;
             padding: 20px;
@@ -32,7 +32,7 @@
             color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #3498db;
+            border-bottom: 3px solid #e74c3c;
             padding-bottom: 15px;
         }
         
@@ -40,10 +40,13 @@
             color: #2980b9;
             margin-top: 25px;
             margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
         }
         
         h3 {
-            color: #16a085;
+            color: #2c3e50;
+            margin-top: 0;
         }
         
         .section {
@@ -59,7 +62,7 @@
             color: #2c3e50;
         }
         
-        input[type="text"], textarea {
+        input[type="text"], textarea, select {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -69,7 +72,7 @@
             transition: border 0.3s;
         }
         
-        input[type="text"]:focus, textarea:focus {
+        input[type="text"]:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -131,6 +134,14 @@
             background-color: #c0392b;
         }
         
+        .button.officer {
+            background-color: #34495e;
+        }
+        
+        .button.officer:hover {
+            background-color: #2c3e50;
+        }
+        
         #videoContainer {
             margin-top: 20px;
             text-align: center;
@@ -142,23 +153,37 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
-        #analysesContainer, #feedbacksContainer {
+        #aangiftesContainer {
             margin-top: 20px;
         }
         
-        .analysis-item, .feedback-item {
+        .aangifte-item {
             background-color: #f8f9fa;
             border-left: 4px solid #3498db;
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 0 5px 5px 0;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .aangifte-item.reviewed {
+            border-left-color: #2ecc71;
+            background-color: #f1f8f4;
+        }
+        
+        .aangifte-item.pending {
+            border-left-color: #f39c12;
+            background-color: #fef9e7;
         }
         
         .feedback-item {
-            border-left-color: #2ecc71;
+            border-left: 3px solid #2ecc71;
             margin-left: 20px;
             background-color: #f1f8f4;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 0 5px 5px 0;
         }
         
         .feedback-form {
@@ -171,8 +196,13 @@
         .timestamp {
             font-size: 14px;
             color: #7f8c8d;
-            margin-top: 10px;
-            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .author {
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
         }
         
         .feedback-count {
@@ -188,17 +218,38 @@
             margin-left: 10px;
         }
         
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-ingediend {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .status-beoordeeld {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
         .instructions {
-            background-color: #f8f9fa;
-            padding: 15px;
+            background-color: #e8f4fc;
+            padding: 20px;
             border-radius: 5px;
             margin-bottom: 20px;
-            border-left: 4px solid #f1c40f;
+            border-left: 4px solid #3498db;
         }
         
         .instructions h3 {
             margin-top: 0;
-            color: #f39c12;
+            color: #2980b9;
         }
         
         .instructions ul {
@@ -206,21 +257,22 @@
         }
         
         .user-info {
-            background-color: #e8f4fc;
-            padding: 10px 15px;
+            background-color: #34495e;
+            color: white;
+            padding: 12px 20px;
             border-radius: 5px;
             margin-bottom: 20px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .online-count {
-            display: inline-block;
-            background-color: #3498db;
+            background-color: #2ecc71;
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
             font-size: 14px;
-            margin-left: 10px;
         }
         
         .notification {
@@ -244,6 +296,32 @@
             background-color: #3498db;
         }
         
+        .notification.warning {
+            background-color: #f39c12;
+        }
+        
+        .incident-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            width: 200px;
+            color: #2c3e50;
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -257,6 +335,15 @@
                 width: 100%;
                 margin-right: 0;
             }
+            
+            .detail-row {
+                flex-direction: column;
+            }
+            
+            .detail-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
@@ -264,53 +351,113 @@
     <div class="notification" id="notification"></div>
     
     <div class="container">
-        <h1>🎬 Video Analyse Chatroom</h1>
+        <h1>🚔 PV Aangifte Training Systeem</h1>
         
         <div class="user-info">
-            <span id="connectionStatus">Verbinden met server...</span>
-            <span class="online-count">Online: <span id="onlineCount">0</span></span>
+            <div>
+                <span id="connectionStatus">Verbinden met systeem...</span>
+                <span id="userRoleDisplay"></span>
+            </div>
+            <div class="online-count">Online: <span id="onlineCount">0</span></div>
         </div>
         
         <div class="instructions">
-            <h3>📋 Instructies voor gebruik</h3>
+            <h3>📋 Instructies voor PV Aangifte Training</h3>
             <ul>
-                <li><strong>Stap 1:</strong> Plak de URL van een YouTube video in het bovenste veld</li>
-                <li><strong>Stap 2:</strong> Schrijf een analyse/reflectie van minimaal 600 woorden</li>
-                <li><strong>Stap 3:</strong> Druk op "Analyse Toevoegen" om je tekst te delen</li>
-                <li><strong>Stap 4:</strong> Geef feedback op analyses van anderen (maximaal 100 woorden)</li>
-                <li><strong>Belangrijk:</strong> Alle analyses en feedback zijn REAL-TIME zichtbaar voor alle deelnemers!</li>
+                <li><strong>Stap 1:</strong> Bekijk het incident video materiaal</li>
+                <li><strong>Stap 2:</strong> Vul een complete PV aangifte in (minimaal 600 woorden)</li>
+                <li><strong>Stap 3:</strong> Druk op "PV Aangifte Indienen" om je aangifte te delen</li>
+                <li><strong>Stap 4:</strong> Geef feedback op aangiftes van andere agenten (maximaal 100 woorden)</li>
+                <li><strong>Stap 5:</strong> Docent kan aangiftes markeren als "beoordeeld"</li>
+                <li><strong>Belangrijk:</strong> Alle aangiftes en feedback zijn REAL-TIME zichtbaar voor alle deelnemers</li>
             </ul>
         </div>
         
         <div class="section">
-            <h2>1. YouTube Video Toevoegen</h2>
-            <label for="youtubeUrl">📺 Plak hier de URL van het YouTube-filmpje:</label>
-            <input type="text" id="youtubeUrl" class="url-input" placeholder="Bijv. https://www.youtube.com/watch?v=VIDEO_ID">
-            <button id="loadVideoBtn" class="button">Video Laden</button>
-            <button id="shareVideoBtn" class="button secondary">Video Delen met Alle Studenten</button>
+            <h2>1. Incident Video Materiaal</h2>
+            <label for="incidentVideoUrl">📹 Plak hier de URL van het incident video materiaal:</label>
+            <input type="text" id="incidentVideoUrl" class="url-input" placeholder="Bijv. https://www.youtube.com/watch?v=VIDEO_ID">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="loadVideoBtn" class="button">Video Laden</button>
+                <button id="shareVideoBtn" class="button secondary">Video Delen met Alle Agenten</button>
+            </div>
             
             <div id="videoContainer">
-                <!-- Hier komt de YouTube video -->
+                <!-- Hier komt de incident video -->
             </div>
         </div>
         
         <div class="section">
-            <h2>2. Analyse Schrijven (minimaal 600 woorden)</h2>
-            <label for="analysisText">✍️ Schrijf hier je analyse/reflectie:</label>
-            <textarea id="analysisText" rows="15" placeholder="Begin hier met het schrijven van je analyse... (minimaal 600 woorden)"></textarea>
-            <div id="wordCounter" class="word-counter">0 woorden</div>
-            <button id="submitAnalysisBtn" class="button" disabled>📤 Analyse Toevoegen</button>
-        </div>
-        
-        <div class="section">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="margin-bottom: 0;">3. Geplaatste Analyses</h2>
-                <button id="clearAllBtn" class="button danger">🗑️ Alles Wissen (einde les)</button>
-            </div>
-            <p>Hieronder zie je alle geplaatste analyses. Je kunt feedback geven op elke analyse.</p>
+            <h2>2. PV Aangifte Opstellen</h2>
             
-            <div id="analysesContainer">
-                <!-- Analyses worden hier dynamisch toegevoegd via socket.io -->
+            <div class="incident-details">
+                <h3>Incident Gegevens</h3>
+                <div class="detail-row">
+                    <div class="detail-label">Datum incident:</div>
+                    <div class="detail-value">
+                        <input type="date" id="incidentDate" style="width: 200px;">
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Tijdstip incident:</div>
+                    <div class="detail-value">
+                        <input type="time" id="incidentTime" style="width: 200px;">
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Plaats incident:</div>
+                    <div class="detail-value">
+                        <input type="text" id="incidentLocation" placeholder="Bijv. Hoofdstraat 123, Amsterdam">
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Type incident:</div>
+                    <div class="detail-value">
+                        <select id="incidentType">
+                            <option value="">Selecteer type incident</option>
+                            <option value="diefstal">Diefstal</option>
+                            <option value="vernieling">Vernieling</option>
+                            <option value="verkeer">Verkeersincident</option>
+                            <option value="agressie">Agressie/geweld</option>
+                            <option value="overig">Overig</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <label for="aangifteText">📝 Schrijf hier je complete PV aangifte:</label>
+            <textarea id="aangifteText" rows="15" placeholder="Beschrijf het incident volledig en gedetailleerd... (minimaal 600 woorden)
+            
+- Wat heb je gezien?
+- Wie waren er betrokken?
+- Wat is er precies gebeurd?
+- Welke bewijzen zijn er?
+- Wat zijn de gevolgen?"></textarea>
+            <div id="wordCounter" class="word-counter">0 woorden</div>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="submitAangifteBtn" class="button" disabled>📤 PV Aangifte Indienen</button>
+                <button id="clearFormBtn" class="button danger">Formulier Wissen</button>
+                <select id="userRole" class="button" style="background-color: #95a5a6; padding: 12px; width: auto;">
+                    <option value="agent">Agent</option>
+                    <option value="docent">Docent/Onderwijzer</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h2 style="margin-bottom: 0;">3. Ingediende PV Aangiftes</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button id="markAllReviewedBtn" class="button officer" style="display: none;">Alles Als Beoordeeld Markeren</button>
+                    <button id="clearAllBtn" class="button danger">🗑️ Alle Aangiftes Wissen</button>
+                </div>
+            </div>
+            <p>Hieronder zie je alle ingediende PV aangiftes. Je kunt feedback geven op elke aangifte.</p>
+            
+            <div id="aangiftesContainer">
+                <!-- Aangiftes worden hier dynamisch toegevoegd via socket.io -->
+                <div id="emptyState" class="timestamp">Nog geen PV aangiftes ingediend. Wees de eerste!</div>
             </div>
         </div>
     </div>
@@ -323,29 +470,44 @@
         const socket = io();
         
         // Elementen selecteren
-        const youtubeUrlInput = document.getElementById('youtubeUrl');
+        const incidentVideoUrl = document.getElementById('incidentVideoUrl');
         const loadVideoBtn = document.getElementById('loadVideoBtn');
         const shareVideoBtn = document.getElementById('shareVideoBtn');
         const videoContainer = document.getElementById('videoContainer');
-        const analysisText = document.getElementById('analysisText');
+        const aangifteText = document.getElementById('aangifteText');
         const wordCounter = document.getElementById('wordCounter');
-        const submitAnalysisBtn = document.getElementById('submitAnalysisBtn');
-        const analysesContainer = document.getElementById('analysesContainer');
+        const submitAangifteBtn = document.getElementById('submitAangifteBtn');
+        const aangiftesContainer = document.getElementById('aangiftesContainer');
         const clearAllBtn = document.getElementById('clearAllBtn');
         const connectionStatus = document.getElementById('connectionStatus');
         const onlineCount = document.getElementById('onlineCount');
         const notification = document.getElementById('notification');
+        const emptyState = document.getElementById('emptyState');
+        const userRoleSelect = document.getElementById('userRole');
+        const userRoleDisplay = document.getElementById('userRoleDisplay');
+        const markAllReviewedBtn = document.getElementById('markAllReviewedBtn');
+        const clearFormBtn = document.getElementById('clearFormBtn');
+        const incidentDate = document.getElementById('incidentDate');
+        const incidentTime = document.getElementById('incidentTime');
+        const incidentLocation = document.getElementById('incidentLocation');
+        const incidentType = document.getElementById('incidentType');
+        
+        // Stel vandaag in als default datum
+        const today = new Date().toISOString().split('T')[0];
+        incidentDate.value = today;
         
         // Data opslag
-        let currentVideoUrl = '';
-        let analyses = [];
+        let currentIncidentVideo = '';
+        let aangiftes = [];
         let feedbacks = {};
+        let userNumber = Math.floor(Math.random() * 1000) + 1;
+        let isDocent = false;
         
         // Verbindingsstatus
         socket.on('connect', () => {
-            connectionStatus.textContent = 'Verbonden met server';
+            connectionStatus.textContent = 'Verbonden met PV systeem';
             connectionStatus.style.color = '#27ae60';
-            showNotification('Verbonden met de chatroom!', 'info');
+            showNotification('Verbonden met het PV aangifte systeem!', 'info');
         });
         
         socket.on('disconnect', () => {
@@ -354,20 +516,35 @@
             showNotification('Verbinding verbroken. Herverbinden...', 'error');
         });
         
+        // Update rol weergave
+        function updateRoleDisplay() {
+            isDocent = userRoleSelect.value === 'docent';
+            userRoleDisplay.textContent = isDocent ? '👨‍🏫 Docent' : '👮 Agent';
+            userRoleDisplay.style.marginLeft = '15px';
+            userRoleDisplay.style.fontWeight = 'bold';
+            
+            // Toon/verberg docent functionaliteit
+            markAllReviewedBtn.style.display = isDocent ? 'block' : 'none';
+        }
+        
+        userRoleSelect.addEventListener('change', updateRoleDisplay);
+        updateRoleDisplay();
+        
         // Ontvang initiële data bij verbinding
         socket.on('init', (data) => {
-            currentVideoUrl = data.videoUrl;
-            analyses = data.analyses || [];
+            console.log('Init data ontvangen:', data);
+            currentIncidentVideo = data.incidentVideo || '';
+            aangiftes = data.aangiftes || [];
             feedbacks = data.feedbacks || {};
             
             // Toon huidige video als die er is
-            if (currentVideoUrl) {
-                youtubeUrlInput.value = currentVideoUrl;
-                loadYouTubeVideo(currentVideoUrl, false);
+            if (currentIncidentVideo) {
+                incidentVideoUrl.value = currentIncidentVideo;
+                loadIncidentVideo(currentIncidentVideo, false);
             }
             
-            // Toon alle analyses
-            renderAllAnalyses();
+            // Toon alle aangiftes
+            renderAllAangiftes();
         });
         
         // Update online teller
@@ -376,54 +553,73 @@
         });
         
         // Ontvang video updates
-        socket.on('video-updated', (url) => {
-            if (url !== currentVideoUrl) {
-                currentVideoUrl = url;
-                youtubeUrlInput.value = url;
-                loadYouTubeVideo(url, false);
-                showNotification('Docent heeft een nieuwe video gedeeld!', 'info');
+        socket.on('incident-video-updated', (url) => {
+            console.log('Incident video update ontvangen:', url);
+            if (url !== currentIncidentVideo) {
+                currentIncidentVideo = url;
+                incidentVideoUrl.value = url;
+                loadIncidentVideo(url, false);
+                showNotification('Nieuwe incident video gedeeld!', 'info');
             }
         });
         
-        // Ontvang nieuwe analyses
-        socket.on('analysis-added', (analysis) => {
+        // Ontvang nieuwe aangiftes
+        socket.on('aangifte-added', (aangifte) => {
+            console.log('Nieuwe PV aangifte ontvangen:', aangifte);
             // Voeg toe aan lokale array
-            analyses.unshift(analysis);
+            aangiftes.unshift(aangifte);
             
-            // Render de nieuwe analyse
-            renderAnalysis(analysis, true);
+            // Verwijder lege staat als nodig
+            if (emptyState && emptyState.parentNode) {
+                emptyState.remove();
+            }
+            
+            // Render de nieuwe aangifte
+            renderAangifte(aangifte, true);
             
             // Toon melding
-            showNotification('Nieuwe analyse toegevoegd!', 'info');
+            showNotification(`Nieuwe PV aangifte ingediend door ${aangifte.author}!`, 'info');
         });
         
         // Ontvang nieuwe feedback
-        socket.on('feedback-added', ({ analysisId, feedback }) => {
+        socket.on('feedback-added', ({ aangifteId, feedback }) => {
+            console.log('Nieuwe feedback ontvangen:', { aangifteId, feedback });
             // Voeg feedback toe aan lokale opslag
-            if (!feedbacks[analysisId]) {
-                feedbacks[analysisId] = [];
+            if (!feedbacks[aangifteId]) {
+                feedbacks[aangifteId] = [];
             }
-            feedbacks[analysisId].push(feedback);
+            feedbacks[aangifteId].push(feedback);
             
-            // Update de betreffende analyse
-            updateFeedbackDisplay(analysisId);
+            // Update de betreffende aangifte
+            updateFeedbackDisplay(aangifteId);
             
             // Toon melding
-            showNotification('Nieuwe feedback ontvangen!', 'info');
+            showNotification('Nieuwe feedback op PV aangifte ontvangen!', 'info');
+        });
+        
+        // Ontvang aangifte beoordeeld update
+        socket.on('aangifte-reviewed', (aangifteId) => {
+            const aangifte = aangiftes.find(a => a.id === aangifteId);
+            if (aangifte) {
+                aangifte.status = 'beoordeeld';
+                updateAangifteStatus(aangifteId);
+                showNotification(`PV aangifte beoordeeld door docent`, 'info');
+            }
         });
         
         // Reset alle data
         socket.on('all-cleared', () => {
-            analyses = [];
+            aangiftes = [];
             feedbacks = {};
-            analysesContainer.innerHTML = '<p class="timestamp">Alle inhoud is gewist. Start een nieuwe discussie!</p>';
-            showNotification('Alle inhoud is gewist. Klaar voor nieuwe les!', 'info');
+            aangiftesContainer.innerHTML = '<div id="emptyState" class="timestamp">Alle PV aangiftes zijn gewist. Klaar voor nieuwe training!</div>';
+            emptyState = document.getElementById('emptyState');
+            showNotification('Alle PV aangiftes zijn gewist. Klaar voor nieuwe training!', 'info');
         });
         
-        // YouTube video laden functie (lokaal)
-        function loadYouTubeVideo(url, showEmbed = true) {
+        // Incident video laden functie
+        function loadIncidentVideo(url, showEmbed = true) {
             if (!url) {
-                videoContainer.innerHTML = '<p>Voer een YouTube URL in</p>';
+                videoContainer.innerHTML = '<p>Voer een video URL in</p>';
                 return;
             }
             
@@ -447,7 +643,7 @@
             
             if (!videoId) {
                 if (showEmbed) {
-                    videoContainer.innerHTML = '<p>Kon de YouTube video ID niet vinden. Controleer de URL.</p>';
+                    videoContainer.innerHTML = '<p>Kon de video ID niet vinden. Controleer de URL.</p>';
                 }
                 return;
             }
@@ -455,55 +651,69 @@
             if (showEmbed) {
                 // Video embedden
                 videoContainer.innerHTML = `
-                    <h3>Gedeelde Video:</h3>
+                    <h3>Incident Video Materiaal:</h3>
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" 
                         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                         allowfullscreen>
                     </iframe>
-                    <p><em>Video geladen. Je kunt nu je analyse schrijven.</em></p>
+                    <p><em>Incident video geladen. Je kunt nu je PV aangifte opstellen.</em></p>
                 `;
             }
         }
         
-        // YouTube video laden (lokaal)
+        // Video laden (lokaal)
         loadVideoBtn.addEventListener('click', () => {
-            const url = youtubeUrlInput.value.trim();
-            loadYouTubeVideo(url);
+            const url = incidentVideoUrl.value.trim();
+            loadIncidentVideo(url);
         });
         
         // Video delen met iedereen
         shareVideoBtn.addEventListener('click', () => {
-            const url = youtubeUrlInput.value.trim();
+            const url = incidentVideoUrl.value.trim();
             
             if (!url) {
-                alert('Voer een YouTube URL in om te delen');
+                alert('Voer een video URL in om te delen');
                 return;
             }
             
             // Stuur naar server
-            socket.emit('update-video', url);
-            currentVideoUrl = url;
-            loadYouTubeVideo(url);
+            socket.emit('update-incident-video', url);
+            currentIncidentVideo = url;
+            loadIncidentVideo(url);
             
-            showNotification('Video gedeeld met alle studenten!', 'info');
+            showNotification('Incident video gedeeld met alle agenten!', 'info');
         });
         
-        // Woorden tellen voor analyse
-        analysisText.addEventListener('input', updateWordCount);
+        // Woorden tellen voor aangifte
+        aangifteText.addEventListener('input', updateWordCount);
         
-        // Analyse toevoegen
-        submitAnalysisBtn.addEventListener('click', addAnalysis);
+        // Aangifte indienen
+        submitAangifteBtn.addEventListener('click', submitAangifte);
         
-        // Alles wissen (einde les)
+        // Formulier wissen
+        clearFormBtn.addEventListener('click', clearForm);
+        
+        // Alles wissen
         clearAllBtn.addEventListener('click', () => {
-            if (confirm('Weet je zeker dat je alle analyses en feedback wilt wissen? Dit kan niet ongedaan worden.')) {
+            if (confirm('Weet je zeker dat je alle PV aangiftes en feedback wilt wissen? Dit kan niet ongedaan worden.')) {
                 socket.emit('clear-all');
+            }
+        });
+        
+        // Alles als beoordeeld markeren (docent)
+        markAllReviewedBtn.addEventListener('click', () => {
+            if (confirm('Alle PV aangiftes als beoordeeld markeren?')) {
+                aangiftes.forEach(aangifte => {
+                    if (aangifte.status !== 'beoordeeld') {
+                        socket.emit('mark-reviewed', aangifte.id);
+                    }
+                });
             }
         });
         
         // Woorden tellen functie
         function updateWordCount() {
-            const text = analysisText.value.trim();
+            const text = aangifteText.value.trim();
             const words = text === '' ? 0 : text.split(/\s+/).length;
             
             wordCounter.textContent = `${words} woorden`;
@@ -512,118 +722,182 @@
             if (words < 600) {
                 wordCounter.classList.add('warning');
                 wordCounter.textContent = `${words} woorden (minimaal 600 woorden vereist)`;
-                submitAnalysisBtn.disabled = true;
+                submitAangifteBtn.disabled = true;
             } else {
                 wordCounter.classList.remove('warning');
-                submitAnalysisBtn.disabled = false;
+                submitAangifteBtn.disabled = false;
             }
         }
         
-        // Analyse toevoegen functie
-        function addAnalysis() {
-            const analysisTextValue = analysisText.value.trim();
+        // Formulier wissen
+        function clearForm() {
+            if (confirm('Weet je zeker dat je het formulier wilt wissen?')) {
+                aangifteText.value = '';
+                incidentLocation.value = '';
+                incidentType.value = '';
+                updateWordCount();
+            }
+        }
+        
+        // PV Aangifte indienen functie
+        function submitAangifte() {
+            const aangifteTextValue = aangifteText.value.trim();
+            const location = incidentLocation.value.trim();
+            const type = incidentType.value;
+            const date = incidentDate.value;
+            const time = incidentTime.value;
             
-            if (analysisTextValue === '') {
-                alert('Voer een analyse in');
+            if (aangifteTextValue === '') {
+                alert('Voer een PV aangifte in');
                 return;
             }
             
-            const words = analysisTextValue.split(/\s+/).length;
+            if (!location) {
+                alert('Vul de plaats van het incident in');
+                return;
+            }
+            
+            if (!type) {
+                alert('Selecteer het type incident');
+                return;
+            }
+            
+            const words = aangifteTextValue.split(/\s+/).length;
             
             if (words < 600) {
-                alert('Je analyse moet minimaal 600 woorden bevatten. Je hebt momenteel ' + words + ' woorden.');
+                alert('Je PV aangifte moet minimaal 600 woorden bevatten. Je hebt momenteel ' + words + ' woorden.');
                 return;
             }
             
-            // Maak analyse object
-            const analysis = {
-                text: analysisTextValue,
-                author: `Student_${Math.floor(Math.random() * 1000)}`, // In een echte app: inloggen
-                timestamp: new Date().toLocaleTimeString('nl-NL')
+            // Maak aangifte object
+            const aangifte = {
+                text: aangifteTextValue,
+                author: isDocent ? `Docent_${userNumber}` : `Agent_${userNumber}`,
+                location: location,
+                type: type,
+                date: date,
+                time: time,
+                timestamp: new Date().toISOString()
             };
             
-            // Stuur naar server
-            socket.emit('new-analysis', analysis);
+            console.log('PV aangifte verzenden:', aangifte);
             
-            // Textarea leegmaken
-            analysisText.value = '';
+            // Stuur naar server
+            socket.emit('new-aangifte', aangifte);
+            
+            // Formulier leegmaken
+            aangifteText.value = '';
             updateWordCount();
+            
+            // Toon bevestiging
+            showNotification('Je PV aangifte wordt ingediend...', 'info');
         }
         
-        // Alle analyses renderen
-        function renderAllAnalyses() {
-            analysesContainer.innerHTML = '';
+        // Alle aangiftes renderen
+        function renderAllAangiftes() {
+            console.log('renderAllAangiftes aangeroepen, aantal aangiftes:', aangiftes.length);
             
-            if (analyses.length === 0) {
-                analysesContainer.innerHTML = '<p class="timestamp">Nog geen analyses. Wees de eerste!</p>';
+            if (aangiftes.length === 0) {
+                if (!emptyState || !emptyState.parentNode) {
+                    aangiftesContainer.innerHTML = '<div id="emptyState" class="timestamp">Nog geen PV aangiftes ingediend. Wees de eerste!</div>';
+                }
                 return;
             }
             
-            analyses.forEach(analysis => {
-                renderAnalysis(analysis, false);
+            // Verwijder lege staat
+            if (emptyState && emptyState.parentNode) {
+                emptyState.remove();
+            }
+            
+            // Render alle aangiftes
+            aangiftes.forEach(aangifte => {
+                renderAangifte(aangifte, false);
             });
         }
         
-        // Enkele analyse renderen
-        function renderAnalysis(analysis, prepend = false) {
-            const analysisId = analysis.id;
+        // Enkele aangifte renderen
+        function renderAangifte(aangifte, prepend = false) {
+            console.log('renderAangifte aangeroepen voor:', aangifte);
             
-            const analysisItem = document.createElement('div');
-            analysisItem.className = 'analysis-item';
-            analysisItem.id = `analysis_${analysisId}`;
+            const aangifteId = aangifte.id;
+            
+            const aangifteItem = document.createElement('div');
+            aangifteItem.className = `aangifte-item ${aangifte.status === 'beoordeeld' ? 'reviewed' : 'pending'}`;
+            aangifteItem.id = `aangifte_${aangifteId}`;
             
             // Formatteer datum/tijd
-            const date = new Date(analysis.timestamp);
+            const date = new Date(aangifte.timestamp);
             const formattedTime = date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
             const formattedDate = date.toLocaleDateString('nl-NL');
             
-            // Haal feedback op voor deze analyse
-            const analysisFeedbacks = feedbacks[analysisId] || [];
-            const feedbackCount = analysisFeedbacks.length;
+            // Haal feedback op voor deze aangifte
+            const aangifteFeedbacks = feedbacks[aangifteId] || [];
+            const feedbackCount = aangifteFeedbacks.length;
             
-            analysisItem.innerHTML = `
-                <h3>Analyse van ${analysis.author}</h3>
-                <p>${analysis.text.replace(/\n/g, '<br>')}</p>
-                <div class="timestamp">Geplaatst op: ${formattedDate} ${formattedTime}</div>
+            // Status badge
+            const statusText = aangifte.status === 'beoordeeld' ? 'Beoordeeld' : 'In Beoordeling';
+            const statusClass = aangifte.status === 'beoordeeld' ? 'status-beoordeeld' : 'status-ingediend';
+            
+            aangifteItem.innerHTML = `
+                <div class="status-badge ${statusClass}">${statusText}</div>
+                <div class="author">${aangifte.author}</div>
+                <div class="timestamp">Ingediend op ${formattedDate} om ${formattedTime}</div>
                 
-                <div class="feedback-form">
-                    <h4>💬 Feedback geven op deze analyse:</h4>
-                    <textarea class="feedback-text" rows="3" placeholder="Schrijf hier je feedback (maximaal 100 woorden)..."></textarea>
-                    <div class="word-counter feedback-counter">0 woorden</div>
-                    <button class="button submit-feedback-btn" data-analysis-id="${analysisId}">Feedback Toevoegen</button>
+                <div style="margin: 15px 0; padding: 15px; background-color: #e8f4fc; border-radius: 5px;">
+                    <strong>Incident details:</strong><br>
+                    • Datum: ${aangifte.date || 'Niet gespecificeerd'}<br>
+                    • Tijd: ${aangifte.time || 'Niet gespecificeerd'}<br>
+                    • Locatie: ${aangifte.location || 'Niet gespecificeerd'}<br>
+                    • Type: ${aangifte.type || 'Niet gespecificeerd'}
                 </div>
                 
-                <h4>Feedback op deze analyse (<span class="feedback-count">${feedbackCount}</span>):</h4>
-                <div class="feedbacks-list" id="feedbacks_${analysisId}">
-                    ${renderFeedbacks(analysisFeedbacks)}
+                <h3>PV Aangifte:</h3>
+                <p>${aangifte.text.replace(/\n/g, '<br>')}</p>
+                
+                ${isDocent && aangifte.status !== 'beoordeeld' ? 
+                    `<button class="button officer" onclick="markAsReviewed('${aangifteId}')" style="margin-top: 10px;">
+                        ✅ Markeer als Beoordeeld
+                    </button>` 
+                    : ''}
+                
+                <div class="feedback-form">
+                    <h4>💬 Feedback geven op deze PV aangifte:</h4>
+                    <textarea class="feedback-text" rows="3" placeholder="Geef constructieve feedback op deze PV aangifte (maximaal 100 woorden)..."></textarea>
+                    <div class="word-counter feedback-counter">0 woorden</div>
+                    <button class="button submit-feedback-btn" data-aangifte-id="${aangifteId}">Feedback Toevoegen</button>
+                </div>
+                
+                <h4>Feedback op deze PV aangifte (<span class="feedback-count">${feedbackCount}</span>):</h4>
+                <div class="feedbacks-list" id="feedbacks_${aangifteId}">
+                    ${renderFeedbacks(aangifteFeedbacks)}
                 </div>
             `;
             
             if (prepend) {
-                analysesContainer.prepend(analysisItem);
+                aangiftesContainer.prepend(aangifteItem);
             } else {
-                analysesContainer.appendChild(analysisItem);
+                aangiftesContainer.appendChild(aangifteItem);
             }
             
             // Event listeners toevoegen voor feedback
-            const feedbackTextarea = analysisItem.querySelector('.feedback-text');
-            const feedbackCounter = analysisItem.querySelector('.feedback-counter');
-            const submitFeedbackBtn = analysisItem.querySelector('.submit-feedback-btn');
+            const feedbackTextarea = aangifteItem.querySelector('.feedback-text');
+            const feedbackCounter = aangifteItem.querySelector('.feedback-counter');
+            const submitFeedbackBtn = aangifteItem.querySelector('.submit-feedback-btn');
             
             feedbackTextarea.addEventListener('input', function() {
                 updateFeedbackWordCount(this);
             });
             
             submitFeedbackBtn.addEventListener('click', function() {
-                const analysisId = this.getAttribute('data-analysis-id');
-                addFeedback(analysisId);
+                const aangifteId = this.getAttribute('data-aangifte-id');
+                addFeedback(aangifteId);
             });
         }
         
         // Feedback renderen
         function renderFeedbacks(feedbacks) {
             if (!feedbacks || feedbacks.length === 0) {
-                return '<p class="timestamp">Nog geen feedback op deze analyse.</p>';
+                return '<p class="timestamp">Nog geen feedback op deze PV aangifte.</p>';
             }
             
             return feedbacks.map(feedback => {
@@ -632,34 +906,56 @@
                 
                 return `
                     <div class="feedback-item">
+                        <div class="author">${feedback.author}</div>
+                        <div class="timestamp">${formattedTime}</div>
                         <p>${feedback.text.replace(/\n/g, '<br>')}</p>
-                        <div class="timestamp">Geplaatst door ${feedback.author} om ${formattedTime}</div>
                     </div>
                 `;
             }).join('');
         }
         
         // Feedback display updaten
-        function updateFeedbackDisplay(analysisId) {
-            const analysisFeedbacks = feedbacks[analysisId] || [];
-            const feedbacksList = document.getElementById(`feedbacks_${analysisId}`);
-            const feedbackCountElement = document.querySelector(`#analysis_${analysisId} .feedback-count`);
+        function updateFeedbackDisplay(aangifteId) {
+            const aangifteFeedbacks = feedbacks[aangifteId] || [];
+            const feedbacksList = document.getElementById(`feedbacks_${aangifteId}`);
+            const feedbackCountElement = document.querySelector(`#aangifte_${aangifteId} .feedback-count`);
             
             if (feedbacksList) {
-                feedbacksList.innerHTML = renderFeedbacks(analysisFeedbacks);
+                feedbacksList.innerHTML = renderFeedbacks(aangifteFeedbacks);
             }
             
             if (feedbackCountElement) {
-                feedbackCountElement.textContent = analysisFeedbacks.length;
+                feedbackCountElement.textContent = aangifteFeedbacks.length;
             }
         }
         
+        // Aangifte status updaten
+        function updateAangifteStatus(aangifteId) {
+            const aangifteElement = document.getElementById(`aangifte_${aangifteId}`);
+            if (aangifteElement) {
+                aangifteElement.className = 'aangifte-item reviewed';
+                const statusBadge = aangifteElement.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.className = 'status-badge status-beoordeeld';
+                    statusBadge.textContent = 'Beoordeeld';
+                }
+            }
+        }
+        
+        // Als beoordeeld markeren (globale functie voor knop)
+        window.markAsReviewed = function(aangifteId) {
+            socket.emit('mark-reviewed', aangifteId);
+        };
+        
         // Feedback toevoegen
-        function addFeedback(analysisId) {
-            const analysisElement = document.getElementById(`analysis_${analysisId}`);
-            if (!analysisElement) return;
+        function addFeedback(aangifteId) {
+            const aangifteElement = document.getElementById(`aangifte_${aangifteId}`);
+            if (!aangifteElement) {
+                console.error('Aangifte element niet gevonden:', aangifteId);
+                return;
+            }
             
-            const feedbackTextarea = analysisElement.querySelector('.feedback-text');
+            const feedbackTextarea = aangifteElement.querySelector('.feedback-text');
             const feedbackText = feedbackTextarea.value.trim();
             
             if (feedbackText === '') {
@@ -677,18 +973,22 @@
             // Maak feedback object
             const feedback = {
                 text: feedbackText,
-                author: `Student_${Math.floor(Math.random() * 1000)}`, // In een echte app: inloggen
+                author: isDocent ? `Docent_${userNumber}` : `Agent_${userNumber}`,
                 timestamp: new Date().toISOString()
             };
             
+            console.log('Feedback verzenden:', { aangifteId, feedback });
+            
             // Stuur naar server
-            socket.emit('new-feedback', { analysisId, feedback });
+            socket.emit('new-feedback', { aangifteId, feedback });
             
             // Textarea leegmaken
             feedbackTextarea.value = '';
-            const feedbackCounter = analysisElement.querySelector('.feedback-counter');
-            feedbackCounter.textContent = '0 woorden';
-            feedbackCounter.classList.remove('warning');
+            const feedbackCounter = aangifteElement.querySelector('.feedback-counter');
+            if (feedbackCounter) {
+                feedbackCounter.textContent = '0 woorden';
+                feedbackCounter.classList.remove('warning');
+            }
         }
         
         // Feedback woorden tellen
@@ -697,15 +997,17 @@
             const words = text === '' ? 0 : text.split(/\s+/).length;
             const feedbackCounter = textarea.parentElement.querySelector('.feedback-counter');
             
-            feedbackCounter.textContent = `${words} woorden`;
-            
-            if (words > 100) {
-                feedbackCounter.classList.add('warning');
-                feedbackCounter.textContent = `${words} woorden (maximaal 100 woorden)`;
-                textarea.parentElement.querySelector('.submit-feedback-btn').disabled = true;
-            } else {
-                feedbackCounter.classList.remove('warning');
-                textarea.parentElement.querySelector('.submit-feedback-btn').disabled = false;
+            if (feedbackCounter) {
+                feedbackCounter.textContent = `${words} woorden`;
+                
+                if (words > 100) {
+                    feedbackCounter.classList.add('warning');
+                    feedbackCounter.textContent = `${words} woorden (maximaal 100 woorden)`;
+                    textarea.parentElement.querySelector('.submit-feedback-btn').disabled = true;
+                } else {
+                    feedbackCounter.classList.remove('warning');
+                    textarea.parentElement.querySelector('.submit-feedback-btn').disabled = false;
+                }
             }
         }
         
@@ -720,8 +1022,19 @@
             }, 3000);
         }
         
+        // Voeg enter-toets ondersteuning toe voor aangifte tekstvak
+        aangifteText.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                if (!submitAangifteBtn.disabled) {
+                    submitAangifte();
+                }
+            }
+        });
+        
         // Initialisatie
         updateWordCount();
+        updateRoleDisplay();
     </script>
 </body>
 </html>
